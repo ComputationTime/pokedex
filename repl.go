@@ -7,6 +7,27 @@ import (
 	"strings"
 )
 
+type command struct {
+	name        string
+	description string
+	callback    func() error
+}
+
+func getCommands() map[string]command {
+	return map[string]command{
+		"help": {
+			name:        "help",
+			description: "gives you the list of all commands",
+			callback:    callbackHelp,
+		},
+		"quit": {
+			name:        "quit",
+			description: "quit the Pokedex",
+			callback:    callbackQuit,
+		},
+	}
+}
+
 func startREPL() {
 	scanner := bufio.NewScanner(os.Stdin)
 	for {
@@ -19,18 +40,15 @@ func startREPL() {
 			continue
 		}
 
-		command := cleaned[0]
+		commandName := cleaned[0]
 
-		switch command {
-		case "quit":
-			os.Exit(0)
-		case "help":
-			fmt.Println("Welcome to the Pokedex. Here are the available commands:")
-			fmt.Println(" - help")
-			fmt.Println(" - exit")
-		default:
-			fmt.Println("Invalid command")
+		command, ok := getCommands()[commandName]
+
+		if !ok {
+			fmt.Println("Invalid command. Type help to get available commands")
+			continue
 		}
+		command.callback()
 	}
 }
 
