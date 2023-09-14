@@ -6,7 +6,7 @@ import (
 
 func callMap(cfg *config, url *string) error {
 
-	locations, err := cfg.pokeapiClient.ListLocations(url)
+	locations, err := cfg.pokeapiClient.ListLocationAreas(url)
 	if err != nil {
 		return err
 	}
