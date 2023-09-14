@@ -1,19 +1,20 @@
 package main
 
 import (
-	"fmt"
-	"log"
+	"time"
 
 	"github.com/computationtime/pokedex/internal/pokeapi"
 )
 
-func main() {
-	pokeapiClient := pokeapi.NewClient()
+type config struct {
+	pokeapiClient       pokeapi.Client
+	nextLocationURL     *string
+	previousLocationURL *string
+}
 
-	locations, err := pokeapiClient.ListLocations()
-	if err != nil {
-		log.Fatal(err)
+func main() {
+	cfg := config{
+		pokeapiClient: pokeapi.NewClient(30 * time.Minute),
 	}
-	fmt.Println(locations)
-	// startREPL()
+	startREPL(&cfg)
 }

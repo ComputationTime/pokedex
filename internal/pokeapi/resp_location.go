@@ -7,9 +7,27 @@ import (
 	"net/http"
 )
 
-func (c *Client) ListLocations() (LocationsResp, error) {
-	endpoint := "/location-area"
+func (c *Client) ListLocations(url *string) (LocationsResp, error) {
+	endpoint := "/location-area/?offset=0&limit=20"
 	fullURL := baseURL + endpoint
+	if url != nil {
+		fullURL = *url
+	}
+
+	locations := LocationsResp{}
+	data, ok := c.cache.Get(fullURL)
+	if ok {
+		fmt.Println("cache hit")
+
+		err := json.Unmarshal(data, &locations)
+
+		if err != nil {
+			return LocationsResp{}, err
+		}
+
+		return locations, nil
+	}
+	fmt.Println("cache miss")
 
 	req, err := http.NewRequest("GET", fullURL, nil)
 	if err != nil {
@@ -26,18 +44,18 @@ func (c *Client) ListLocations() (LocationsResp, error) {
 		return LocationsResp{}, fmt.Errorf("bad status code: %v", resp.StatusCode)
 	}
 
-	data, err := io.ReadAll(resp.Body)
+	data, err = io.ReadAll(resp.Body)
 	if err != nil {
 		return LocationsResp{}, err
 	}
-
-	locations := LocationsResp{}
 
 	err = json.Unmarshal(data, &locations)
 
 	if err != nil {
 		return LocationsResp{}, err
 	}
+
+	c.cache.Add(fullURL, data)
 
 	return locations, nil
 
