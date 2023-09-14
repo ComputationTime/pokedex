@@ -21,10 +21,10 @@ func callMap(cfg *config, url *string) error {
 
 }
 
-func callbackMap(cfg *config) error {
+func callbackMap(cfg *config, args ...string) error {
 	return callMap(cfg, cfg.nextLocationURL)
 }
 
-func callbackMapb(cfg *config) error {
+func callbackMapb(cfg *config, args ...string) error {
 	return callMap(cfg, cfg.previousLocationURL)
 }

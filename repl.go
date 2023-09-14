@@ -10,7 +10,7 @@ import (
 type command struct {
 	name        string
 	description string
-	callback    func(*config) error
+	callback    func(*config, ...string) error
 }
 
 func getCommands() map[string]command {
@@ -35,6 +35,11 @@ func getCommands() map[string]command {
 			description: "show previous set of up to 20 locations",
 			callback:    callbackMapb,
 		},
+		"explore": {
+			name:        "explore {locationArea}",
+			description: "'explore location' will return the pokemon encounters in a location",
+			callback:    callbackExplore,
+		},
 	}
 }
 
@@ -58,7 +63,7 @@ func startREPL(cfg *config) {
 			fmt.Println("Invalid command. Type help to get available commands")
 			continue
 		}
-		err := command.callback(cfg)
+		err := command.callback(cfg, cleaned[1:]...)
 		if err != nil {
 			fmt.Println(err)
 		}
